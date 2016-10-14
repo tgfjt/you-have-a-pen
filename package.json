@@ -1,0 +1,28 @@
+{
+  "name": "@tgfjt/you-have-a-pen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "budo src/app.js --open --live --port 8080 -- -t sheetify/transform",
+    "copy": "mkdir -p dist && cp src/index.html dist",
+    "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o dist/app.js -t sheetify/transform -g yo-yoify -g unassertify -g es2040 -g uglifyify "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "choo": "^3.3.0",
+    "tachyons": "^4.5.3"
+  },
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "budo": "^9.2.1",
+    "choo-log": "^2.0.0",
+    "es2040": "^1.2.4",
+    "sheetify": "^5.1.1",
+    "uglifyify": "^3.0.3",
+    "unassertify": "^2.0.3",
+    "yo-yoify": "^3.4.1"
+  }
+}
