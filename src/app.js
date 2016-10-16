@@ -13,7 +13,6 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(log())
 }
 
-app.model(require('./models/board'))
 app.model(require('./models/game'))
 
 app.router(route => [
