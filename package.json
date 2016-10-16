@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "budo src/app.js --open --live --port 8080 -- -t sheetify/transform",
-    "copy": "mkdir -p dist && cp src/index.html dist",
-    "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o dist/app.js -t sheetify/transform -g yo-yoify -g unassertify -g es2040 -g uglifyify "
+    "copy": "mkdir -p docs && cp src/index.html docs",
+    "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o docs/app.js -t sheetify/transform -g yo-yoify -g unassertify -g es2040 -g uglifyify "
   },
   "keywords": [],
   "author": "",
