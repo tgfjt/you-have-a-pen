@@ -1,37 +1,31 @@
 const key = require('keymaster')
 const xtend = require('xtend')
 const flatten = require('lodash.flatten')
+const cloneDeep = require('lodash.cloneDeep')
 
 const rand = require('../utils/randInt')
-const words = require('../utils/words')
+const config = require('../utils/config')
 
-const chars = [
-  'A', 'E', 'P', 'L', 'N', 'I'
-]
-const colors = [
-  'light-red',
-  'light-green',
-  'light-blue',
-  'gray'
-]
+const words = config.words
+const chars = config.chars
+const colors = config.colors
+const boardSize = config.boardSize
 
-const boardSize = {
-  rows: 10,
-  cols: 15
-}
-
-function newBlock () {
+function newBlock (opts) {
   return {
     charactor: chars[rand(5)],
     color: colors[rand(3)],
     x: boardSize.rows / 2,
-    y: boardSize.cols - 1
+    y: boardSize.cols - 1,
+    current: opts && !!opts.current
   }
 }
 
-const orderedMatrix = Array.from(Array(boardSize.cols)).map((col) => {
-  return Array.from(Array(boardSize.rows)).map(row => null)
-})
+const orderedMatrix = () => {
+  return Array.from(Array(boardSize.cols)).map((col) => {
+    return Array.from(Array(boardSize.rows)).map(row => null)
+  })
+}
 
 module.exports = {
   namespace: 'game',
@@ -49,13 +43,20 @@ module.exports = {
       charactor: null,
       color: null
     },
-    orderedBlocks: orderedMatrix
+    orderedBlocks: orderedMatrix()
   },
   reducers: {
     newGame: (data, state) => ({
       timer: null,
       nextBlock: newBlock(),
-      currentBlock: newBlock()
+      currentBlock: newBlock({ current: true }),
+      orderedBlocks: orderedMatrix()
+    }),
+    makeCurrentEmpty: () => ({
+      currentBlock: {
+        charactor: null,
+        color: null
+      }
     }),
     saveBlock: (data, state) => ({
       orderedBlocks: data
@@ -90,18 +91,39 @@ module.exports = {
       }
     },
     removeBlocks: (data, state, send, done) => {
-      console.log('揃った', data)
+      const newData = cloneDeep(state.orderedBlocks)
+
+      let rows = []
+      let isGotLine = null
 
       data.forEach((line, i) => {
-        line.forEach((index) => {
-          if (index > -1) {
-            // TODO: 最初の文字だけ分かってもな…最初だけしか消せないからな…
-            console.log(state.orderedBlocks[i][index])
+        line.forEach((word) => {
+          if (word.index > -1) {
+            isGotLine = i;
+            [].forEach.call(word.str, (s, index) => {
+              console.log(newData[i][word.index + index])
+              if (newData[i][word.index + index].current) {
+                send('game:makeCurrentEmpty', done)
+              }
+
+              rows.push(word.index + index)
+
+              newData[i][word.index + index] = null
+            })
           }
         })
       })
 
-    // send('game:changeBlocks', blocks, done)
+      setTimeout(() => {
+        for (let i = isGotLine + 1; i < newData.length; i++) {
+          rows.forEach((r) => {
+            if (newData[i][r]) newData[i][r].y = newData[i][r].y - 1
+          })
+        }
+        send('game:changeBlocks', newData, done)
+      }, 500)
+
+      send('game:changeBlocks', newData, done)
     },
     mainLoop: (data, state, send, done) => {
       state.timer = setTimeout(() => {
@@ -129,33 +151,36 @@ module.exports = {
     next: (data, state, send, done) => {
       clearTimeout(this.timer)
 
-      const newBlocks = state.orderedBlocks.slice()
+      const newBlocks = cloneDeep(state.orderedBlocks)
       newBlocks[state.currentBlock.y][state.currentBlock.x] = state.currentBlock
 
       send('game:saveBlock', newBlocks, done)
 
-      window.blocks = newBlocks
-      window.words = words
-
       // TODO: row と col をしょっちゅう混同してる気がするが大丈夫か
-
       const indexOfLines = newBlocks.map((col, i) => {
         const rowString = col.map((row) => {
           if (row) return row.charactor
           else return ' '
         }).join('')
 
-        return words.map(word => rowString.indexOf(word))
+        return words.map((word) => {
+          return {
+            str: word,
+            index: rowString.indexOf(word)
+          }
+        })
       })
 
       const isGotWord = indexOfLines.some((row) => {
-        return row.some(i => i > -1)
+        return row.some(word => word.index > -1)
       })
 
       if (isGotWord) {
         send('game:removeBlocks', indexOfLines, done)
         return
       }
+
+      console.log('揃ってない')
 
       // Block出現場所を埋めるとゲームオーバー。
       // TODO: 毎回割り算したりする必要はないけど
