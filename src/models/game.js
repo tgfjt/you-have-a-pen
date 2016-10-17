@@ -175,11 +175,7 @@ module.exports = {
     handleDown: (data, state, send, done) => {
       if (state.currentBlock.y > 0) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
-            if (state.currentBlock.x === b.x && state.currentBlock.y - 1 === b.y) {
-              return false
-            } else {
-              return true
-            }
+            return !(state.currentBlock.x === b.x && state.currentBlock.y - 1 === b.y);
           })) {
           send('game:updateCurrent', xtend(state.currentBlock, { y: state.currentBlock.y - 1}), done)
         }
@@ -188,11 +184,7 @@ module.exports = {
     handleLeft: (data, state, send, done) => {
       if (state.currentBlock.x > 0) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
-            if (state.currentBlock.y === b.y && state.currentBlock.x - 1 === b.x) {
-              return false
-            } else {
-              return true
-            }
+            return !(state.currentBlock.y === b.y && state.currentBlock.x - 1 === b.x)
           })) {
           send('game:updateCurrent', xtend(state.currentBlock, { x: state.currentBlock.x - 1}), done)
         }
@@ -201,11 +193,7 @@ module.exports = {
     handleRight: (data, state, send, done) => {
       if (state.currentBlock.x < (state.board.rows - 1)) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
-            if (state.currentBlock.y === b.y && state.currentBlock.x + 1 === b.x) {
-              return false
-            } else {
-              return true
-            }
+            return !(state.currentBlock.y === b.y && state.currentBlock.x + 1 === b.x)
           })) {
           send('game:updateCurrent', xtend(state.currentBlock, { x: state.currentBlock.x + 1}), done)
         }
