@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "budo src/app.js --open --live --port 8080 -- -t sheetify/transform",
     "copy": "mkdir -p docs && cp src/index.html docs",
-    "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o docs/app.js -t sheetify/transform -g yo-yoify -g unassertify -g es2040 -g uglifyify "
+    "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o docs/app.js -t sheetify/transform -t envify -g yo-yoify -g unassertify -g es2040 -g uglifyify "
   },
   "keywords": [],
   "author": "",
@@ -22,6 +22,7 @@
     "browserify": "^13.1.0",
     "budo": "^9.2.1",
     "choo-log": "^2.0.0",
+    "envify": "^3.4.1",
     "es2040": "^1.2.4",
     "sheetify": "^5.1.1",
     "uglifyify": "^3.0.3",
