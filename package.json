@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "budo src/app.js --open --live --port 8080 -- -t sheetify/transform",
     "copy": "mkdir -p docs && cp src/index.html docs",
+    "lint": "standard src/**/**.js --verbose | snazzy",
+    "test": "ava",
+    "cov": "nyc report --reporter=html",
     "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o docs/app.js -t sheetify/transform -t envify -g yo-yoify -g unassertify -g es2040 -g uglifyify "
   },
   "keywords": [],
@@ -20,14 +23,24 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
+    "ava": "^0.16.0",
     "browserify": "^13.1.0",
     "budo": "^9.2.1",
     "choo-log": "^2.0.0",
     "envify": "^3.4.1",
     "es2040": "^1.2.4",
+    "nyc": "^8.3.2",
     "sheetify": "^5.1.1",
+    "snazzy": "^5.0.0",
+    "standard": "^8.4.0",
     "uglifyify": "^3.0.3",
     "unassertify": "^2.0.3",
     "yo-yoify": "^3.4.1"
+  },
+  "ava": {
+    "files": [
+      "tests/**/*.js"
+    ],
+    "verbose": true
   }
 }
