@@ -3,29 +3,13 @@ const xtend = require('xtend')
 const flatten = require('lodash.flatten')
 const cloneDeep = require('lodash.cloneDeep')
 
-const rand = require('../utils/randInt')
-const config = require('../utils/config')
+const config = require('../lib/config')
+const getIndexOfLines = require('../lib/indexOfLines')
+const isGotWord = require('../lib/isGotWord')
+const newBlock = require('../lib/newBlock')
+const orderedMatrix = require('../lib/orderedMatrix')
 
-const words = config.words
-const chars = config.chars
-const colors = config.colors
 const boardSize = config.boardSize
-
-function newBlock (opts) {
-  return {
-    charactor: chars[rand(5)],
-    color: colors[rand(3)],
-    x: boardSize.rows / 2,
-    y: boardSize.cols - 1,
-    current: opts && !!opts.current
-  }
-}
-
-const orderedMatrix = () => {
-  return Array.from(Array(boardSize.cols)).map((col) => {
-    return Array.from(Array(boardSize.rows)).map(row => null)
-  })
-}
 
 module.exports = {
   namespace: 'game',
@@ -43,14 +27,14 @@ module.exports = {
       charactor: null,
       color: null
     },
-    orderedBlocks: orderedMatrix()
+    orderedBlocks: orderedMatrix(boardSize)
   },
   reducers: {
     newGame: (data, state) => ({
       timer: null,
       nextBlock: newBlock(),
       currentBlock: newBlock({ current: true }),
-      orderedBlocks: orderedMatrix()
+      orderedBlocks: orderedMatrix(boardSize)
     }),
     makeCurrentEmpty: () => ({
       currentBlock: {
@@ -101,7 +85,6 @@ module.exports = {
           if (word.index > -1) {
             isGotLine = i;
             [].forEach.call(word.str, (s, index) => {
-              console.log(newData[i][word.index + index])
               if (newData[i][word.index + index].current) {
                 send('game:makeCurrentEmpty', done)
               }
@@ -120,25 +103,36 @@ module.exports = {
             if (newData[i][r]) newData[i][r].y = newData[i][r].y - 1
           })
         }
+        console.log('Change: moveDown', newData)
         send('game:changeBlocks', newData, done)
+
+        const indexOfLines = getIndexOfLines(newData)
+
+        if (isGotWord(indexOfLines)) {
+          console.log('まだある')
+          // send('game:removeBlocks', indexOfLines, done)
+        } else {
+          setTimeout(() => {
+            send('game:updateNext', newBlock(), done)
+            send('game:mainLoop', done)
+          }, 500)
+        }
       }, 500)
 
+      console.log('Change: Remove', newData)
       send('game:changeBlocks', newData, done)
     },
     mainLoop: (data, state, send, done) => {
       state.timer = setTimeout(() => {
+        console.log('MAINLOOP')
         send('game:loop', done)
       }, state.looptime)
     },
     loop: (data, state, send, done) => {
       if (state.currentBlock.y > 0) {
         if (!flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
-            if (state.currentBlock.x === b.x && state.currentBlock.y - 1 === b.y) {
-              return false
-            } else {
-              return true
-            }
-          })) {
+          return !(state.currentBlock.x === b.x && state.currentBlock.y - 1 === b.y)
+        })) {
           send('game:next', done)
         } else {
           send('game:handleDown', done)
@@ -156,31 +150,12 @@ module.exports = {
 
       send('game:saveBlock', newBlocks, done)
 
-      // TODO: row と col をしょっちゅう混同してる気がするが大丈夫か
-      const indexOfLines = newBlocks.map((col, i) => {
-        const rowString = col.map((row) => {
-          if (row) return row.charactor
-          else return ' '
-        }).join('')
+      const indexOfLines = getIndexOfLines(newBlocks)
 
-        return words.map((word) => {
-          return {
-            str: word,
-            index: rowString.indexOf(word)
-          }
-        })
-      })
-
-      const isGotWord = indexOfLines.some((row) => {
-        return row.some(word => word.index > -1)
-      })
-
-      if (isGotWord) {
+      if (isGotWord(indexOfLines)) {
         send('game:removeBlocks', indexOfLines, done)
         return
       }
-
-      console.log('揃ってない')
 
       // Block出現場所を埋めるとゲームオーバー。
       // TODO: 毎回割り算したりする必要はないけど
@@ -200,40 +175,43 @@ module.exports = {
     handleDown: (data, state, send, done) => {
       if (state.currentBlock.y > 0) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
-            return !(state.currentBlock.x === b.x && state.currentBlock.y - 1 === b.y);
-          })) {
-          send('game:updateCurrent', xtend(state.currentBlock, { y: state.currentBlock.y - 1}), done)
+          return !(state.currentBlock.x === b.x && state.currentBlock.y - 1 === b.y)
+        })) {
+          send('game:updateCurrent', xtend(state.currentBlock, { y: state.currentBlock.y - 1 }), done)
         }
       }
     },
     handleLeft: (data, state, send, done) => {
       if (state.currentBlock.x > 0) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
-            return !(state.currentBlock.y === b.y && state.currentBlock.x - 1 === b.x)
-          })) {
-          send('game:updateCurrent', xtend(state.currentBlock, { x: state.currentBlock.x - 1}), done)
+          return !(state.currentBlock.y === b.y && state.currentBlock.x - 1 === b.x)
+        })) {
+          send('game:updateCurrent', xtend(state.currentBlock, { x: state.currentBlock.x - 1 }), done)
         }
       }
     },
     handleRight: (data, state, send, done) => {
       if (state.currentBlock.x < (state.board.rows - 1)) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
-            return !(state.currentBlock.y === b.y && state.currentBlock.x + 1 === b.x)
-          })) {
-          send('game:updateCurrent', xtend(state.currentBlock, { x: state.currentBlock.x + 1}), done)
+          return !(state.currentBlock.y === b.y && state.currentBlock.x + 1 === b.x)
+        })) {
+          send('game:updateCurrent', xtend(state.currentBlock, { x: state.currentBlock.x + 1 }), done)
         }
       }
     }
   },
   subscriptions: [
     (send, done) => {
-      key('down', () => {
+      key('down', (e) => {
+        e.preventDefault();
         send('game:handleDown', done)
       })
-      key('left', () => {
+      key('left', (e) => {
+        e.preventDefault();
         send('game:handleLeft', done)
       })
-      key('right', () => {
+      key('right', (e) => {
+        e.preventDefault();
         send('game:handleRight', done)
       })
       key('esc', () => {
