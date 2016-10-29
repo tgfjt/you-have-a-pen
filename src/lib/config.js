@@ -1,6 +1,12 @@
 exports.words = [
-  'PEN', 'APPLE', 'PINEAPPLE'
+  'PINEAPPLE', 'APPLE', 'PEN'
 ]
+
+exports.scores = {
+  PINEAPPLE: 30,
+  APPLE: 15,
+  PEN: 10
+}
 
 exports.chars = [
   'A', 'E', 'P', 'L', 'N', 'I'

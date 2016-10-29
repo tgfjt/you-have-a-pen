@@ -47,7 +47,7 @@ module.exports = {
     }),
     updateNext: (data, state) => ({
       nextBlock: data,
-      currentBlock: state.nextBlock
+      currentBlock: xtend(state.nextBlock, { current: true })
     }),
     updateCurrent: (data, state) => ({
       currentBlock: data
@@ -74,57 +74,68 @@ module.exports = {
         send('game:mainLoop', done)
       }
     },
-    removeBlocks: (data, state, send, done) => {
+    removeBlocks: (indexOfLines, state, send, done) => {
       const newData = cloneDeep(state.orderedBlocks)
 
       let rows = []
       let isGotLine = null
+      let gotWord = ''
 
-      data.forEach((line, i) => {
-        line.forEach((word) => {
-          if (word.index > -1) {
-            isGotLine = i;
-            [].forEach.call(word.str, (s, index) => {
-              if (newData[i][word.index + index].current) {
+      // TODO: みづらい
+      indexOfLines.forEach((line, i) => {
+        for (let j = 0; j < line.length; j++) {
+          if (line[j].index > -1) {
+            isGotLine = i
+            gotWord = line[j].str
+
+            Array.prototype.forEach.call(line[j].str, (s, index) => {
+              if (newData[i][line[j].index + index].current) {
                 send('game:makeCurrentEmpty', done)
               }
 
-              rows.push(word.index + index)
+              rows.push(line[j].index + index)
 
-              newData[i][word.index + index] = null
+              newData[i][line[j].index + index] = null
             })
+
+            if (gotWord === 'PINEAPPLE') {
+              break
+            }
           }
-        })
+        }
       })
 
+      // 下ろす
+      // TODO: みづらい
       setTimeout(() => {
         for (let i = isGotLine + 1; i < newData.length; i++) {
           rows.forEach((r) => {
-            if (newData[i][r]) newData[i][r].y = newData[i][r].y - 1
+            if (newData[i][r]) {
+              const newBl = xtend(newData[i][r], { y: newData[i][r].y - 1 })
+              newData[i][r] = null
+              newData[i - 1][r] = newBl
+            }
           })
         }
-        console.log('Change: moveDown', newData)
         send('game:changeBlocks', newData, done)
 
         const indexOfLines = getIndexOfLines(newData)
 
         if (isGotWord(indexOfLines)) {
           console.log('まだある')
-          // send('game:removeBlocks', indexOfLines, done)
         } else {
           setTimeout(() => {
             send('game:updateNext', newBlock(), done)
             send('game:mainLoop', done)
-          }, 500)
+          }, state.looptime / 2)
         }
-      }, 500)
+      }, state.looptime / 2)
 
-      console.log('Change: Remove', newData)
+      send('result:remove', gotWord, done)
       send('game:changeBlocks', newData, done)
     },
     mainLoop: (data, state, send, done) => {
       state.timer = setTimeout(() => {
-        console.log('MAINLOOP')
         send('game:loop', done)
       }, state.looptime)
     },
@@ -203,20 +214,25 @@ module.exports = {
   subscriptions: [
     (send, done) => {
       key('down', (e) => {
-        e.preventDefault();
+        e.preventDefault()
         send('game:handleDown', done)
       })
       key('left', (e) => {
-        e.preventDefault();
+        e.preventDefault()
         send('game:handleLeft', done)
       })
       key('right', (e) => {
-        e.preventDefault();
+        e.preventDefault()
         send('game:handleRight', done)
       })
       key('esc', () => {
         send('game:pause', done)
       })
+
+      window.onerror = (msg, file, line, column, err) => {
+        alert('予期せぬエラー')
+        throw new Error(`UncaughtError:${msg}`)
+      }
     }
   ]
 }

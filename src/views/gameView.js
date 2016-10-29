@@ -28,19 +28,17 @@ module.exports = (state, prev, send) => {
         <button onclick=${(e) => send('game:start')}>NEW GAME</button>
       </div>
       <aside>
-      <table>
-        ${state.game.orderedBlocks.slice().reverse().map((tr) => {
-          return html`
-            <tr>
-              ${tr.map((td) => {
-                const str = td ? td.charactor : '0'
-                return html`<td class="w1 tc">${str}</td>`
-              })}
-            </tr>
-          `
-        })}
-      </table>
-    </aside>
+        <h3>${state.result.totalscore}</h3>
+        <div>
+          ${Object.keys(state.result.details).map((key) => {
+            return html`
+              <div>
+                <div>${key}: <span>${state.result.details[key]}</span></div>
+              </div>
+            `
+          })}
+        </div>
+      </aside>
     </main>
     
   `
