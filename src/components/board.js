@@ -1,7 +1,6 @@
 const html = require('choo/html')
 const css = require('sheetify')
 
-const block = require('./block')
 const prefix = css`
   .board {
     background: #aaa

@@ -9,11 +9,12 @@ css('tachyons')
 const app = choo()
 
 if (process.env.NODE_ENV !== 'production') {
-  const log = require('choo-log')
-  app.use(log())
+  // const log = require('choo-log')
+  // app.use(log())
 }
 
 app.model(require('./models/game'))
+app.model(require('./models/result'))
 
 app.router(route => [
   route('/', gameView)

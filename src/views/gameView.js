@@ -1,7 +1,6 @@
 const html = require('choo/html')
 const flatten = require('lodash.flatten')
 
-const block = require('../components/block')
 const blocknboard = require('../components/blocknboard')
 const board = require('../components/board')
 const next = require('../components/next')
@@ -28,6 +27,19 @@ module.exports = (state, prev, send) => {
       <div class="pa4">
         <button onclick=${(e) => send('game:start')}>NEW GAME</button>
       </div>
+      <aside>
+        <h3>${state.result.totalscore}</h3>
+        <div>
+          ${Object.keys(state.result.details).map((key) => {
+            return html`
+              <div>
+                <div>${key}: <span>${state.result.details[key]}</span></div>
+              </div>
+            `
+          })}
+        </div>
+      </aside>
     </main>
+    
   `
 }
