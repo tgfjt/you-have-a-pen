@@ -2,8 +2,8 @@ const html = require('choo/html')
 
 const block = require('./block')
 
-const nextBlock = (state) => html`
-  <div>${block(state)}</div>
+const nextBlock = (state, size) => html`
+  <div>${block(state, size)}</div>
 `
 
 module.exports = nextBlock

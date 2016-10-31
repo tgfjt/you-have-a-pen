@@ -9,17 +9,17 @@ exports.scores = {
 }
 
 exports.chars = [
-  'A', 'E', 'P', 'L', 'N', 'I'
+  'P', 'P', 'P', 'I', 'I', 'E', 'E', 'N', 'N', 'A', 'L'
 ]
 
 exports.colors = [
-  'light-red',
   'light-green',
-  'light-blue',
-  'gray'
+  'light-gray'
 ]
 
 exports.boardSize = {
-  rows: 10,
+  rows: 12,
   cols: 15
 }
+
+exports.getBlockSize = width => (width > 640) ? 32 : 24

@@ -2,11 +2,11 @@ const html = require('choo/html')
 const css = require('sheetify')
 
 const prefix = css`
-  a { line-height: 1; }
+  a { line-height: 1; display: table-cell; vertical-align: middle; box-sizing: border-box; }
   a:hover { cursor: pointer; }
   a:empty { height: 1em; }
 `
-const block = (state, send) => {
+const block = (state, size, send) => {
   if (!state.color || !state.charactor) {
     return ''
   }
@@ -14,9 +14,11 @@ const block = (state, send) => {
   console.assert(typeof state.color === 'string', 'color is not string')
   console.assert(typeof state.charactor === 'string', 'charactor is not string')
 
+  const sizing = `width:${size}px;height:${size}px`
+
   return html`
     <div class="${prefix}">
-      <a class="ba b--black-30 link dim pa2 db tc w1 bg-${state.color}">${state.charactor}</a>
+      <a class="ba b--black-40 link dim db tc bg-${state.color}" style="${sizing}">${state.charactor}</a>
     </div>
   `
 }

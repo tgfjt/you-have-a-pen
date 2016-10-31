@@ -17,7 +17,7 @@ module.exports = {
     timer: null,
     pause: false,
     looptime: 750,
-    size: 34,
+    size: config.getBlockSize(window.innerWidth),
     board: boardSize,
     nextBlock: {
       charactor: null,
@@ -122,7 +122,8 @@ module.exports = {
         const indexOfLines = getIndexOfLines(newData)
 
         if (isGotWord(indexOfLines)) {
-          console.log('まだある')
+          send('game:removeBlocks', indexOfLines, done)
+          return
         } else {
           setTimeout(() => {
             send('game:updateNext', newBlock(), done)

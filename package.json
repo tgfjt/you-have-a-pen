@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "budo src/app.js --open --live --port 8080 -- -t sheetify/transform",
-    "copy": "mkdir -p docs && cp src/index.html docs",
+    "copy": "mkdir -p docs && cp index.html docs",
     "lint": "standard src/**/**.js --verbose | snazzy",
     "test": "ava",
     "cov": "nyc report --reporter=html",
