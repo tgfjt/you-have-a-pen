@@ -1,6 +1,5 @@
 const xtend = require('xtend')
 
-const words = require('../lib/config').words
 const scores = require('../lib/config').scores
 
 module.exports = {
@@ -21,8 +20,6 @@ module.exports = {
   },
   effects: {
     remove: (targetWord, state, send, done) => {
-      console.log('result:remove', targetWord, scores[targetWord])
-
       console.assert(typeof targetWord === 'string', 'targetWord is not string')
       console.assert(typeof (state.details[targetWord] + scores[targetWord]) === 'number', 'score is not number')
 

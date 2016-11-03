@@ -8,6 +8,7 @@ const getIndexOfLines = require('../lib/indexOfLines')
 const isGotWord = require('../lib/isGotWord')
 const newBlock = require('../lib/newBlock')
 const orderedMatrix = require('../lib/orderedMatrix')
+const isNeighbor = require('../lib/isNeighbor')
 
 const boardSize = config.boardSize
 
@@ -27,7 +28,8 @@ module.exports = {
       charactor: null,
       color: null
     },
-    orderedBlocks: orderedMatrix(boardSize)
+    orderedBlocks: orderedMatrix(boardSize),
+    selectedBlock: null
   },
   reducers: {
     newGame: (data, state) => ({
@@ -42,9 +44,6 @@ module.exports = {
         color: null
       }
     }),
-    saveBlock: (data, state) => ({
-      orderedBlocks: data
-    }),
     updateNext: (data, state) => ({
       nextBlock: data,
       currentBlock: xtend(state.nextBlock, { current: true })
@@ -57,17 +56,25 @@ module.exports = {
     }),
     changeBlocks: (data, state) => ({
       orderedBlocks: data
-    })
+    }),
+    selectBlock: (data, state) => ({
+      selectedBlock: data
+    }),
+    stopTimer: (data, state) => ({ timer: null })
   },
   effects: {
     start: (data, state, send, done) => {
-      clearTimeout(state.timer)
+      send('game:stopTimer', null, done)
       send('game:newGame', done)
       send('game:mainLoop', done)
     },
+    stop: (data, state, send, done) => {
+      clearTimeout(state.timer)
+      send('game:stopTimer', done)
+    },
     pause: (data, state, send, done) => {
       if (!state.pause) {
-        clearTimeout(state.timer)
+        send('game:stopTimer', null, done)
         send('game:setPause', true, done)
       } else {
         send('game:setPause', false, done)
@@ -124,16 +131,38 @@ module.exports = {
         if (isGotWord(indexOfLines)) {
           send('game:removeBlocks', indexOfLines, done)
           return
-        } else {
+        } else if (state.timer === null) {
           setTimeout(() => {
             send('game:updateNext', newBlock(), done)
             send('game:mainLoop', done)
-          }, state.looptime / 2)
+          }, state.looptime / 1.5)
         }
-      }, state.looptime / 2)
+      }, state.looptime / 1.5)
 
       send('result:remove', gotWord, done)
       send('game:changeBlocks', newData, done)
+    },
+    replaceThis: (data, state, send, done) => {
+      if (state.selectedBlock === null) {
+        send('game:selectBlock', data, done)
+      } else if (state.selectedBlock.color === data.color) {
+        if (isNeighbor(data.x, state.selectedBlock.x) ||
+            isNeighbor(data.y, state.selectedBlock.y)) {
+          const newBlocks = cloneDeep(state.orderedBlocks)
+          newBlocks[data.y][data.x].charactor = state.orderedBlocks[state.selectedBlock.y][state.selectedBlock.x].charactor
+          newBlocks[state.selectedBlock.y][state.selectedBlock.x].charactor = state.orderedBlocks[data.y][data.x].charactor
+
+          send('game:changeBlocks', newBlocks, done)
+          const indexOfLines = getIndexOfLines(newBlocks)
+
+          if (isGotWord(indexOfLines)) {
+            send('game:removeBlocks', indexOfLines, done)
+          }
+          send('game:selectBlock', null, done)
+        }
+      } else {
+        send('game:selectBlock', null, done)
+      }
     },
     mainLoop: (data, state, send, done) => {
       state.timer = setTimeout(() => {
@@ -155,18 +184,21 @@ module.exports = {
       }
     },
     next: (data, state, send, done) => {
-      clearTimeout(this.timer)
+      send('game:stopTimer', null, done)
 
       const newBlocks = cloneDeep(state.orderedBlocks)
       newBlocks[state.currentBlock.y][state.currentBlock.x] = state.currentBlock
 
-      send('game:saveBlock', newBlocks, done)
+      send('game:changeBlocks', newBlocks, done)
 
       const indexOfLines = getIndexOfLines(newBlocks)
 
       if (isGotWord(indexOfLines)) {
         send('game:removeBlocks', indexOfLines, done)
         return
+      } else {
+        newBlocks[state.currentBlock.y][state.currentBlock.x] = xtend(state.currentBlock, { current: false })
+        send('game:changeBlocks', newBlocks, done)
       }
 
       // Block出現場所を埋めるとゲームオーバー。
@@ -180,8 +212,8 @@ module.exports = {
         send('game:mainLoop', done)
       }
     },
-    over: (data, state) => {
-      clearTimeout(state.timer)
+    over: (data, state, send, done) => {
+      send('game:stopTimer', null, done)
       alert('akan')
     },
     handleDown: (data, state, send, done) => {

@@ -19,10 +19,10 @@ module.exports = (state, prev, send) => {
 
         ${flatten(state.game.orderedBlocks).filter(b => !!b).map((b) => {
           const pos = `transform:translate(${b.x * state.game.size}px, ${-b.y * state.game.size}px)`
-          return blocknboard(b, state.game.size, pos)
+          return blocknboard(b, state.game.size, pos, send)
         })}
 
-        ${blocknboard(state.game.currentBlock, state.game.size, pos)}
+        ${blocknboard(state.game.currentBlock, state.game.size, pos, send)}
       </div>
       <div class="pa4">
         <button onclick=${(e) => send('game:start')}>NEW GAME</button>
