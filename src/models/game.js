@@ -74,7 +74,7 @@ module.exports = {
     },
     pause: (data, state, send, done) => {
       if (!state.pause) {
-        send('game:stopTimer', null, done)
+        send('game:stop', null, done)
         send('game:setPause', true, done)
       } else {
         send('game:setPause', false, done)
