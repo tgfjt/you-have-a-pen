@@ -13,13 +13,13 @@ exports.chars = [
 ]
 
 exports.colors = [
-  'light-green',
-  'light-gray'
+  'green',
+  'gray'
 ]
 
 exports.boardSize = {
-  rows: 12,
-  cols: 15
+  rows: 9,
+  cols: 12
 }
 
-exports.getBlockSize = width => (width > 640) ? 32 : 24
+exports.getBlockSize = width => (width > 640) ? 48 : 34

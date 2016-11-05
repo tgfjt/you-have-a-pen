@@ -16,6 +16,8 @@ module.exports = {
   namespace: 'game',
   state: {
     timer: null,
+    started: false,
+    ended: false,
     pause: false,
     looptime: 750,
     size: config.getBlockSize(window.innerWidth),
@@ -34,6 +36,8 @@ module.exports = {
   reducers: {
     newGame: (data, state) => ({
       timer: null,
+      started: true,
+      ended: false,
       nextBlock: newBlock(),
       currentBlock: newBlock({ current: true }),
       orderedBlocks: orderedMatrix(boardSize)
@@ -60,7 +64,11 @@ module.exports = {
     selectBlock: (data, state) => ({
       selectedBlock: data
     }),
-    stopTimer: (data, state) => ({ timer: null })
+    stopTimer: (data, state) => ({ timer: null }),
+    end: (data, state) => ({
+      started: false,
+      ended: true
+    })
   },
   effects: {
     start: (data, state, send, done) => {
@@ -152,12 +160,18 @@ module.exports = {
           newBlocks[data.y][data.x].charactor = state.orderedBlocks[state.selectedBlock.y][state.selectedBlock.x].charactor
           newBlocks[state.selectedBlock.y][state.selectedBlock.x].charactor = state.orderedBlocks[data.y][data.x].charactor
 
+          newBlocks[data.y][data.x].selected = true
+          newBlocks[state.selectedBlock.y][state.selectedBlock.x].selected = true
+
           send('game:changeBlocks', newBlocks, done)
+
           const indexOfLines = getIndexOfLines(newBlocks)
 
           if (isGotWord(indexOfLines)) {
             send('game:removeBlocks', indexOfLines, done)
           }
+          send('game:selectBlock', null, done)
+        } else {
           send('game:selectBlock', null, done)
         }
       } else {
@@ -205,7 +219,7 @@ module.exports = {
       // TODO: 毎回割り算したりする必要はないけど
       if (flatten(state.orderedBlocks)
           .filter(item => !!item)
-          .findIndex(b => b.x === boardSize.rows / 2 && b.y === (boardSize.cols - 1)) > 0) {
+          .findIndex(b => b.x === Math.round(boardSize.rows / 2) && b.y === (boardSize.cols - 1)) > 0) {
         send('game:over', done)
       } else {
         send('game:updateNext', newBlock(), done)
@@ -214,7 +228,7 @@ module.exports = {
     },
     over: (data, state, send, done) => {
       send('game:stopTimer', null, done)
-      alert('akan')
+      send('game:end', null, done)
     },
     handleDown: (data, state, send, done) => {
       if (state.currentBlock.y > 0) {

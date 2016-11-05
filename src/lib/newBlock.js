@@ -9,7 +9,7 @@ function newBlock (opts) {
   return {
     charactor: chars[rand(chars.length - 1)],
     color: colors[rand(colors.length - 1)],
-    x: boardSize.rows / 2,
+    x: Math.round(boardSize.rows / 2),
     y: boardSize.cols - 1,
     current: !!opts && !!opts.current
   }

@@ -3,7 +3,7 @@ const css = require('sheetify')
 
 const gameView = require('./views/gameView')
 
-css('tachyons')
+css('./styles/app.css', { global: true })
 
 const app = choo()
 
