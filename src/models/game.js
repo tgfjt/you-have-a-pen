@@ -19,7 +19,7 @@ module.exports = {
     started: false,
     ended: false,
     pause: false,
-    looptime: 750,
+    looptime: 1000,
     size: config.getBlockSize(window.innerWidth),
     board: boardSize,
     nextBlock: {
@@ -73,6 +73,7 @@ module.exports = {
   effects: {
     start: (data, state, send, done) => {
       send('game:stopTimer', null, done)
+      send('result:reset', null, done)
       send('game:newGame', done)
       send('game:mainLoop', done)
     },
@@ -260,6 +261,33 @@ module.exports = {
   },
   subscriptions: [
     (send, done) => {
+      let touchstartX = 0
+      let touchstartY = 0
+      let touchmoveX = 0
+      let touchmoveY = 0
+      let swipeTimer = null
+      let twiceMoveTimer = null
+      const swipeThreshold = 10
+
+      const handleSwipe = () => {
+        if (Math.abs(touchstartX - touchmoveX) > swipeThreshold) {
+          if (touchstartX > touchmoveX) {
+            send('game:handleLeft', done)
+          } else {
+            send('game:handleRight', done)
+          }
+        }
+
+        if (Math.abs(touchstartY - touchmoveY) > 50 && touchstartY < touchmoveY) {
+          send('game:handleDown', done)
+        }
+      }
+
+      const swipeLoop = () => {
+        handleSwipe()
+        swipeTimer = setTimeout(swipeLoop, 100)
+      }
+
       key('down', (e) => {
         e.preventDefault()
         send('game:handleDown', done)
@@ -279,6 +307,32 @@ module.exports = {
       window.onerror = (msg, file, line, column, err) => {
         alert('予期せぬエラー')
         throw new Error(`UncaughtError:${msg}`)
+      }
+
+      if (window.Touch) {
+        window.addEventListener('touchstart', (e) => {
+          touchstartX = touchmoveX = e.changedTouches[0].screenX
+          touchstartY = touchmoveY = e.changedTouches[0].screenY
+
+          setTimeout(() => {
+            handleSwipe()
+          }, 4)
+
+          twiceMoveTimer = setTimeout(() => {
+            swipeLoop()
+          }, 350)
+        }, false)
+
+        window.addEventListener('touchend', (e) => {
+          clearTimeout(swipeTimer)
+          clearTimeout(twiceMoveTimer)
+        }, false)
+
+        window.addEventListener('touchmove', (e) => {
+          e.preventDefault()
+          touchmoveX = e.changedTouches[0].screenX
+          touchmoveY = e.changedTouches[0].screenY
+        }, false)
       }
     }
   ]

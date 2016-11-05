@@ -14,8 +14,7 @@ main {
   display: block;
 }
 
-button,
-.button {
+button {
   color: white;
   font-size: 1.75em;
   font-family: sans-serif;
@@ -74,7 +73,7 @@ button,
   margin: 0;
   padding: .5em;
   color: #eee;
-  text-shadow: 1px 1px rgba(255, 255, 255, .3);
+  text-shadow: 1px 1px rgba(0, 0, 0, .3);
 }
 
 .block {
@@ -147,41 +146,4 @@ button,
   padding: .5em;
   font-size: small;
   position: relative;
-}
-
-.pad {
-  position: absolute;
-  top: 1rem;
-  width: 100%;
-}
-
-.pad-l,
-.pad-d,
-.pad-r {
-  font-size: 1em;
-  line-height: 1;
-  padding: .75em;
-  width: 2.5em;
-  vertical-align: top;
-  position: absolute;
-  left: 50%;
-  box-sizing: border-box;
-}
-
-.pad-l:active,
-.pad-d:active,
-.pad-r:active {
-  color: blue;
-}
-
-.pad-l {
-  transform: translateX(-150%);
-}
-
-.pad-d {
-  transform: translate(-50%, 100%);
-}
-
-.pad-r {
-  transform: translateX(50%);
 }

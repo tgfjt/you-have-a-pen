@@ -21,11 +21,6 @@ module.exports = (state, prev, send) => {
             </div>
           `
         })}
-        <div class="pad center">
-          <div class="button pad-l" aria-label="to left" role="button" onclick=${(e) => send('game:handleLeft')}>◀</div>
-          <div class="button pad-d" aria-label="to down" role="button" onclick=${(e) => send('game:handleDown')}>▼</div>
-          <div class="button pad-r" aria-label="to right" role="button" onclick=${(e) => send('game:handleRight')}>▶</div>
-        </div>
       </div>
     </main>
   `
