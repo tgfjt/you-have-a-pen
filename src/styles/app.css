@@ -113,6 +113,10 @@ button {
   transition: opacity .25s, visibility .25s;
 }
 
+.block-cover {
+  outline: 0;
+}
+
 .block-cover.is-selected:focus {
   font-weight: bold
 }
