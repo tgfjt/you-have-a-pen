@@ -7,11 +7,11 @@ test('indexOfLines', (t) => {
 
   const r1 = indexOfLines([
     [
-      { charactor: 'P', color: 'light-gray' },
-      { charactor: 'E', color: 'light-gray' },
-      { charactor: 'P', color: 'light-green' },
-      { charactor: 'E', color: 'light-green' },
-      { charactor: 'N', color: 'light-green' }
+      { charactor: 'P', color: 'gray' },
+      { charactor: 'E', color: 'gray' },
+      { charactor: 'P', color: 'green' },
+      { charactor: 'E', color: 'green' },
+      { charactor: 'N', color: 'green' }
     ]
   ])
 
