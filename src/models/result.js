@@ -32,6 +32,13 @@ module.exports = {
       console.assert(typeof targetWord === 'string', 'targetWord is not string')
       console.assert(typeof (state.details[targetWord] + scores[targetWord]) === 'number', 'score is not number')
 
+      if ('SpeechSynthesisUtterance' in window) {
+        var synthes = new window.SpeechSynthesisUtterance()
+        synthes.text = targetWord
+        synthes.lang = 'en-GB'
+        window.speechSynthesis.speak(synthes)
+      }
+
       send('result:addScore', {
         total: state.totalscore + scores[targetWord],
         details: {
