@@ -2,26 +2,22 @@ const html = require('choo/html')
 
 const board = require('../components/board')
 const next = require('../components/next')
-const endView = require('../views/endView')
+const skill = require('../components/skill')
+const volume = require('../components/volume')
+const end = require('../components/end')
 
 module.exports = (state, prev, send) => {
-  if (state.game.ended) {
-    return endView(state, prev, send)
-  }
+  const endView = state.game.ended ? end(state, prev, send) : ''
 
   return html`
-    <main class="container">
-      <div class="relative height3">${next(state.game.nextBlock, state.game.size)}</div>
-      ${board(state, prev, send)}
-      <div class="controller">
-        ${Object.keys(state.result.details).map((key) => {
-          return html`
-            <div>
-              <div>${key}: <span>${state.result.details[key]}</span></div>
-            </div>
-          `
-        })}
+    <main class="relative container">
+      <div class="relative height3">
+        ${next(state.game.nextBlock, state.game.size)}
+        ${skill(state, prev, send)}
+        ${volume(state, prev, send)}
       </div>
+      ${board(state, prev, send)}
+      ${endView}
     </main>
   `
 }

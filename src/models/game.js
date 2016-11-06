@@ -9,6 +9,7 @@ const isGotWord = require('../lib/isGotWord')
 const newBlock = require('../lib/newBlock')
 const orderedMatrix = require('../lib/orderedMatrix')
 const isNeighbor = require('../lib/isNeighbor')
+const sayIt = require('../lib/sayIt')
 
 const boardSize = config.boardSize
 
@@ -19,6 +20,9 @@ module.exports = {
     started: false,
     ended: false,
     pause: false,
+    selectSound: new window.Audio('sound.mp3'),
+    bgm: new window.Audio('bgm.mp3'),
+    volume: true,
     looptime: config.looptime,
     size: config.getBlockSize(window.innerWidth),
     board: boardSize,
@@ -31,7 +35,9 @@ module.exports = {
       color: null
     },
     orderedBlocks: orderedMatrix(boardSize),
-    selectedBlock: null
+    selectedBlock: null,
+    skill: 0,
+    waitingSkill: false
   },
   reducers: {
     newGame: (data, state) => ({
@@ -58,13 +64,16 @@ module.exports = {
     setPause: (data, state) => ({
       pause: data
     }),
-    changeBlocks: (data, state) => ({
+    updateBlocks: (data, state) => ({
       orderedBlocks: data
     }),
     selectBlock: (data, state) => ({
       selectedBlock: data
     }),
     stopTimer: (data, state) => ({ timer: null }),
+    updateSkillCount: (data, state) => ({ skill: data }),
+    setWaitingSkill: (data, state) => ({ waitingSkill: data }),
+    setVolumeState: (data, state) => ({ volume: data }),
     end: (data, state) => ({
       started: false,
       ended: true
@@ -76,6 +85,10 @@ module.exports = {
       send('result:reset', null, done)
       send('game:newGame', done)
       send('game:mainLoop', done)
+      send('game:updateSkillCount', 3, done)
+      send('game:setVolume', null, done)
+      state.bgm.loop = true
+      if (state.volume) state.bgm.play()
     },
     stop: (data, state, send, done) => {
       clearTimeout(state.timer)
@@ -88,6 +101,18 @@ module.exports = {
       } else {
         send('game:setPause', false, done)
         send('game:mainLoop', done)
+      }
+    },
+    setVolume: (data, state, send, done) => {
+      state.bgm.volume = state.volume ? 0.5 : 0
+      state.selectSound.volume = state.volume ? 0.2 : 0
+    },
+    toggleVolume: (data, state, send, done) => {
+      send('game:setVolumeState', !state.volume, done)
+      if (!state.volume) {
+        state.bgm.play()
+      } else {
+        state.bgm.pause()
       }
     },
     removeBlocks: (indexOfLines, state, send, done) => {
@@ -121,6 +146,8 @@ module.exports = {
         }
       })
 
+      sayIt(gotWord, state.volume)
+
       // 下ろす
       // TODO: みづらい
       setTimeout(() => {
@@ -133,7 +160,7 @@ module.exports = {
             }
           })
         }
-        send('game:changeBlocks', newData, done)
+        send('game:updateBlocks', newData, done)
 
         const indexOfLines = getIndexOfLines(newData)
 
@@ -149,9 +176,27 @@ module.exports = {
       }, state.looptime / 1.5)
 
       send('result:remove', gotWord, done)
-      send('game:changeBlocks', newData, done)
+      send('game:updateBlocks', newData, done)
     },
     replaceThis: (data, state, send, done) => {
+      state.selectSound.currentTime = 0
+
+      if (state.waitingSkill) {
+        const newBlocks = cloneDeep(state.orderedBlocks)
+        newBlocks[data.y][data.x].color = config.colors.find(c => c !== newBlocks[data.y][data.x].color)
+        send('game:selectBlock', null, done)
+        send('game:setWaitingSkill', false, done)
+        send('game:pause', null, done)
+        send('game:updateBlocks', newBlocks, done)
+
+        const indexOfLines = getIndexOfLines(newBlocks)
+
+        if (isGotWord(indexOfLines)) {
+          send('game:removeBlocks', indexOfLines, done)
+        }
+        return
+      }
+
       if (state.selectedBlock === null) {
         send('game:selectBlock', data, done)
       } else if (state.selectedBlock.color === data.color) {
@@ -163,8 +208,9 @@ module.exports = {
 
           newBlocks[data.y][data.x].selected = true
           newBlocks[state.selectedBlock.y][state.selectedBlock.x].selected = true
+          if (state.volueme) state.selectSound.play()
 
-          send('game:changeBlocks', newBlocks, done)
+          send('game:updateBlocks', newBlocks, done)
 
           const indexOfLines = getIndexOfLines(newBlocks)
 
@@ -204,7 +250,7 @@ module.exports = {
       const newBlocks = cloneDeep(state.orderedBlocks)
       newBlocks[state.currentBlock.y][state.currentBlock.x] = state.currentBlock
 
-      send('game:changeBlocks', newBlocks, done)
+      send('game:updateBlocks', newBlocks, done)
 
       const indexOfLines = getIndexOfLines(newBlocks)
 
@@ -213,7 +259,7 @@ module.exports = {
         return
       } else {
         newBlocks[state.currentBlock.y][state.currentBlock.x] = xtend(state.currentBlock, { current: false })
-        send('game:changeBlocks', newBlocks, done)
+        send('game:updateBlocks', newBlocks, done)
       }
 
       // Block出現場所を埋めるとゲームオーバー。
@@ -232,7 +278,7 @@ module.exports = {
       send('game:end', null, done)
     },
     handleDown: (data, state, send, done) => {
-      if (state.currentBlock.y > 0) {
+      if (!state.pause && state.currentBlock.y > 0) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
           return !(state.currentBlock.x === b.x && state.currentBlock.y - 1 === b.y)
         })) {
@@ -241,7 +287,7 @@ module.exports = {
       }
     },
     handleLeft: (data, state, send, done) => {
-      if (state.currentBlock.x > 0) {
+      if (!state.pause && state.currentBlock.x > 0) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
           return !(state.currentBlock.y === b.y && state.currentBlock.x - 1 === b.x)
         })) {
@@ -250,12 +296,19 @@ module.exports = {
       }
     },
     handleRight: (data, state, send, done) => {
-      if (state.currentBlock.x < (state.board.rows - 1)) {
+      if (!state.pause && state.currentBlock.x < (state.board.rows - 1)) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
           return !(state.currentBlock.y === b.y && state.currentBlock.x + 1 === b.x)
         })) {
           send('game:updateCurrent', xtend(state.currentBlock, { x: state.currentBlock.x + 1 }), done)
         }
+      }
+    },
+    useSkill: (data, state, send, done) => {
+      if (!state.ended && state.started && state.skill > 0) {
+        send('game:pause', null, done)
+        send('game:setWaitingSkill', true, done)
+        send('game:updateSkillCount', state.skill - 1, done)
       }
     }
   },
@@ -305,7 +358,7 @@ module.exports = {
       })
 
       window.onerror = (msg, file, line, column, err) => {
-        alert('予期せぬエラー')
+        console.log('予期せぬエラー')
         throw new Error(`UncaughtError:${msg}`)
       }
 

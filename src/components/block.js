@@ -9,8 +9,9 @@ const block = (state, size, send) => {
   console.assert(typeof state.charactor === 'string', 'charactor is not string')
 
   const sizing = `width:${size}px;height:${size}px`
+  const blockStyle = state.current ? ' is-current' : ''
 
-  return html`<span class="block bg-${state.color}" style="${sizing}">${state.charactor}</span>`
+  return html`<span class="block bg-${state.color}${blockStyle}" style="${sizing}">${state.charactor}</span>`
 }
 
 module.exports = block

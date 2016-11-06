@@ -9,7 +9,7 @@
     "lint": "standard src/**/**.js --verbose | snazzy",
     "test": "ava",
     "cov": "nyc report --reporter=html",
-    "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o docs/app.js -t sheetify/transform -t envify -g yo-yoify -g unassertify -g es2040 -g uglifyify "
+    "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o docs/app.js -t sheetify/transform -t envify -g unassertify -g es2040 -g uglifyify "
   },
   "keywords": [],
   "author": "",
@@ -33,8 +33,7 @@
     "snazzy": "^5.0.0",
     "standard": "^8.4.0",
     "uglifyify": "^3.0.3",
-    "unassertify": "^2.0.3",
-    "yo-yoify": "^3.4.1"
+    "unassertify": "^2.0.3"
   },
   "ava": {
     "files": [

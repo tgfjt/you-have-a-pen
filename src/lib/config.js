@@ -5,8 +5,8 @@ exports.words = [
 ]
 
 exports.scores = {
-  PINEAPPLE: 30,
-  APPLE: 15,
+  PINEAPPLE: 50,
+  APPLE: 20,
   PEN: 10
 }
 
@@ -23,3 +23,5 @@ exports.boardSize = {
 }
 
 exports.getBlockSize = width => (width > 640) ? 48 : 34
+
+exports.thisUrl = 'https://tgfjt.github.io/you-have-a-pen'
