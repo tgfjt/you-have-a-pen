@@ -19,7 +19,7 @@ module.exports = {
     started: false,
     ended: false,
     pause: false,
-    looptime: 1000,
+    looptime: config.looptime,
     size: config.getBlockSize(window.innerWidth),
     board: boardSize,
     nextBlock: {

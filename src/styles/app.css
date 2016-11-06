@@ -73,7 +73,28 @@ button {
   margin: 0;
   padding: .5em;
   color: #eee;
-  text-shadow: 1px 1px rgba(0, 0, 0, .3);
+  text-shadow: 1px 1px rgba(0, 0, 0, .2);
+  will-change: transform;
+  font-family: helvetica neue, helvetica, sans-serif;
+  font-size: 2em;
+  line-height: 1;
+}
+
+.board-score.is-active {
+  -webkit-animation: countup .5s ease;
+          animation: countup .5s ease;
+}
+
+@-webkit-keyframes countup {
+  0% { -webkit-transform: scale(1); transform: scale(1); }
+  50%  { -webkit-transform: scale(2); transform: scale(2); }
+  100% { -webkit-transform: scale(1); transform: scale(1); }
+}
+
+@keyframes countup {
+  0% { -webkit-transform: scale(1); transform: scale(1); }
+  50%  { -webkit-transform: scale(2); transform: scale(2); }
+  100% { -webkit-transform: scale(1); transform: scale(1); }
 }
 
 .block {

@@ -1,3 +1,5 @@
+exports.looptime = 1500
+
 exports.words = [
   'PINEAPPLE', 'APPLE', 'PEN'
 ]
@@ -8,9 +10,7 @@ exports.scores = {
   PEN: 10
 }
 
-exports.chars = [
-  'P', 'P', 'P', 'I', 'I', 'E', 'E', 'N', 'N', 'A', 'L'
-]
+exports.chars = ['P', 'E', 'N', 'P', 'I', 'N', 'E', 'A', 'P', 'P', 'L', 'E', 'A', 'P', 'P', 'L', 'E', 'P', 'E', 'N']
 
 exports.colors = [
   'green',

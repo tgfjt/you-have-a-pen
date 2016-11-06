@@ -9,13 +9,13 @@ module.exports = (state, prev, send) => {
   const x = state.game.currentBlock.x * state.game.size
   const y = state.game.currentBlock.y * state.game.size
   const pos = `transform:translate(${x}px, ${-y}px)`
-
   const startView = !state.game.started ? start(state, prev, send) : ''
+  const countup = (prev.result && (state.result.totalscore !== prev.result.totalscore)) ? ' is-active' : ''
 
   return html`
     <div class="board center"
       style="width:${state.game.board.rows * state.game.size}px;height:${state.game.board.cols * state.game.size}px">
-      <div class="board-score" style="top:0;right:0">${state.result.totalscore}</div>
+      <div class="board-score${countup}" style="top:0;right:0">${state.result.totalscore}</div>
 
       ${flatten(state.game.orderedBlocks).filter(b => !!b).map((b) => {
         const pos = `transform:translate(${b.x * state.game.size}px, ${-b.y * state.game.size}px)`
