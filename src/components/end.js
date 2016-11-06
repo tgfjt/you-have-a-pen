@@ -25,9 +25,7 @@ module.exports = (state, prev, send) => {
             <h2>${result}</h2>
           </header>
           <footer>
-            <a href="http://twitter.com/share?url=${thisUrl}&text=${message}&hashtags=youhaveapen" class="tweet" target="_blank">
-              Tweet
-            </a>
+            <a href="http://twitter.com/share?url=${thisUrl}&text=${message}&hashtags=youhaveapen" class="tweet" target="_blank">Tweet</a>
             <button onclick=${(e) => send('game:start')}>NEW GAME!</button>
           </footer>
         </section>
