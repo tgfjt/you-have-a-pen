@@ -26,14 +26,8 @@ module.exports = {
     looptime: config.looptime,
     size: config.getBlockSize(window.innerWidth),
     board: boardSize,
-    nextBlock: {
-      charactor: null,
-      color: null
-    },
-    currentBlock: {
-      charactor: null,
-      color: null
-    },
+    nextBlock: { charactor: null, color: null },
+    currentBlock: { charactor: null, color: null },
     orderedBlocks: orderedMatrix(boardSize),
     selectedBlock: null,
     skill: 0,
@@ -49,35 +43,21 @@ module.exports = {
       orderedBlocks: orderedMatrix(boardSize)
     }),
     makeCurrentEmpty: () => ({
-      currentBlock: {
-        charactor: null,
-        color: null
-      }
+      currentBlock: { charactor: null, color: null }
     }),
     updateNext: (data, state) => ({
       nextBlock: data,
       currentBlock: xtend(state.nextBlock, { current: true })
     }),
-    updateCurrent: (data, state) => ({
-      currentBlock: data
-    }),
-    setPause: (data, state) => ({
-      pause: data
-    }),
-    updateBlocks: (data, state) => ({
-      orderedBlocks: data
-    }),
-    selectBlock: (data, state) => ({
-      selectedBlock: data
-    }),
+    updateCurrent: (data, state) => ({ currentBlock: data }),
+    setPause: (data, state) => ({ pause: data }),
+    updateBlocks: (data, state) => ({ orderedBlocks: data }),
+    selectBlock: (data, state) => ({ selectedBlock: data }),
     stopTimer: (data, state) => ({ timer: null }),
     updateSkillCount: (data, state) => ({ skill: data }),
     setWaitingSkill: (data, state) => ({ waitingSkill: data }),
     setVolumeState: (data, state) => ({ volume: data }),
-    end: (data, state) => ({
-      started: false,
-      ended: true
-    })
+    end: (data, state) => ({ started: false, ended: true })
   },
   effects: {
     start: (data, state, send, done) => {

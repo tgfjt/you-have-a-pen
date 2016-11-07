@@ -6,11 +6,7 @@ module.exports = {
   namespace: 'result',
   state: {
     totalscore: 0,
-    details: {
-      PINEAPPLE: 0,
-      APPLE: 0,
-      PEN: 0
-    }
+    details: { PINEAPPLE: 0, APPLE: 0, PEN: 0 }
   },
   reducers: {
     addScore: (data, state) => ({
@@ -19,11 +15,7 @@ module.exports = {
     }),
     reset: (data, state) => ({
       totalscore: 0,
-      details: {
-        PINEAPPLE: 0,
-        APPLE: 0,
-        PEN: 0
-      }
+      details: { PINEAPPLE: 0, APPLE: 0, PEN: 0 }
     })
   },
   effects: {
@@ -34,9 +26,7 @@ module.exports = {
 
       send('result:addScore', {
         total: state.totalscore + scores[targetWord],
-        details: {
-          [targetWord]: state.details[targetWord] + scores[targetWord]
-        }
+        details: { [targetWord]: state.details[targetWord] + scores[targetWord] }
       }, done)
     }
   }

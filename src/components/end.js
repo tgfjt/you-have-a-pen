@@ -1,6 +1,7 @@
 const html = require('choo/html')
 
 const thisUrl = require('../lib/config').thisUrl
+const scores = require('../lib/config').scores
 
 module.exports = (state, prev, send) => {
   const result = `Total Score: ${state.result.totalscore}`
@@ -19,7 +20,7 @@ module.exports = (state, prev, send) => {
             <div>You have:</div>
             <ul class="result-details">
             ${Object.keys(state.result.details).reverse().map((key) => {
-              return html`<li>${state.result.details[key]}<div class="word">${key}s</div></li>`
+              return html`<li>${state.result.details[key] / scores[key]}<div class="word">${key}s</div></li>`
             })}
             </ul>
             <h2>${result}</h2>
