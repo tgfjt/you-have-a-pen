@@ -121,6 +121,7 @@ button,
   user-select: none;
   -webkit-transition: opacity .25s, visibility .25s;
   transition: opacity .25s, visibility .25s;
+  -webkit-tap-highlight-color: inherit;
 }
 
 .is-shaking .block:not(.is-current) {
@@ -130,10 +131,11 @@ button,
 
 .block-cover {
   outline: 0;
+  -webkit-tap-highlight-color: inherit;
 }
 
 .block-cover.is-selected:focus {
-  font-weight: bold
+  font-weight: bold;
 }
 
 .block-cover.is-removed .block {

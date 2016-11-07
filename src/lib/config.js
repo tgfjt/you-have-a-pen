@@ -5,9 +5,9 @@ exports.words = [
 ]
 
 exports.scores = {
-  PINEAPPLE: 50,
-  APPLE: 20,
-  PEN: 10
+  PINEAPPLE: 500,
+  APPLE: 200,
+  PEN: 100
 }
 
 exports.chars = ['P', 'E', 'N', 'P', 'I', 'N', 'E', 'A', 'P', 'P', 'L', 'E', 'A', 'P', 'P', 'L', 'E', 'P', 'E', 'N']

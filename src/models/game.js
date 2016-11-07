@@ -7,6 +7,7 @@ const config = require('../lib/config')
 const getIndexOfLines = require('../lib/indexOfLines')
 const isGotWord = require('../lib/isGotWord')
 const newBlock = require('../lib/newBlock')
+const startedRandBlocks = require('../lib/startedRandBlocks')
 const orderedMatrix = require('../lib/orderedMatrix')
 const isNeighbor = require('../lib/isNeighbor')
 const sayIt = require('../lib/sayIt')
@@ -40,8 +41,9 @@ module.exports = {
       ended: false,
       nextBlock: newBlock(),
       currentBlock: newBlock({ current: true }),
-      orderedBlocks: orderedMatrix(boardSize)
+      orderedBlocks: data
     }),
+    setLooptime: (data, state) => ({ looptime: data }),
     makeCurrentEmpty: () => ({
       currentBlock: { charactor: null, color: null }
     }),
@@ -61,12 +63,24 @@ module.exports = {
   },
   effects: {
     start: (data, state, send, done) => {
+      const firstBlocks = Object.assign(orderedMatrix(boardSize), startedRandBlocks())
+
       send('game:stopTimer', null, done)
       send('result:reset', null, done)
-      send('game:newGame', done)
+      send('game:newGame', firstBlocks, done)
+
+      setTimeout(() => {
+        const indexOfLines = getIndexOfLines(firstBlocks)
+
+        if (isGotWord(indexOfLines)) {
+          send('game:removeBlocks', indexOfLines, done)
+        }
+      }, state.looptime)
+
       send('game:mainLoop', done)
       send('game:updateSkillCount', 3, done)
       send('game:setVolume', null, done)
+
       state.bgm.loop = true
       if (state.volume) state.bgm.play()
     },
@@ -93,6 +107,23 @@ module.exports = {
         state.bgm.play()
       } else {
         state.bgm.pause()
+      }
+    },
+    speedup: (score, state, send, done) => {
+      if (score > 10000) {
+        send('game:setLooptime', 200, done)
+      } else if (score > 7000) {
+        send('game:setLooptime', 300, done)
+      } else if (score > 5000) {
+        send('game:setLooptime', 500, done)
+      } else if (score > 3000) {
+        send('game:setLooptime', 800, done)
+      } else if (score > 2000) {
+        send('game:setLooptime', 900, done)
+      } else if (score > 1000) {
+        send('game:setLooptime', 1000, done)
+      } else if (score > 500) {
+        send('game:setLooptime', 1200, done)
       }
     },
     removeBlocks: (indexOfLines, state, send, done) => {

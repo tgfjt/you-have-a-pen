@@ -24,10 +24,16 @@ module.exports = {
       console.assert(typeof targetWord === 'string', 'targetWord is not string')
       console.assert(typeof (state.details[targetWord] + scores[targetWord]) === 'number', 'score is not number')
 
+      const total = state.totalscore + scores[targetWord]
+
       send('result:addScore', {
-        total: state.totalscore + scores[targetWord],
+        total,
         details: { [targetWord]: state.details[targetWord] + scores[targetWord] }
       }, done)
+
+      if (total >= 100) {
+        send('game:speedup', total, done)
+      }
     }
   }
 }
