@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "budo src/app.js --open --live --port 8080 -- -t sheetify/transform",
     "copy": "mkdir -p docs && cp index.html docs",
-    "lint": "standard src/**/**.js --verbose | snazzy",
+    "lint": "standard src/**/*.js --verbose | snazzy",
     "test": "ava",
     "cov": "nyc report --reporter=html",
     "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o docs/app.js -t sheetify/transform -t envify -g unassertify -g es2040 -g uglifyify ",
