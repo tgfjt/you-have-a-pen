@@ -1,19 +1,25 @@
 {
   "name": "@tgfjt/you-have-a-pen",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A puzzle game.",
   "scripts": {
     "dev": "budo src/app.js --open --live --port 8080 -- -t sheetify/transform",
     "copy": "mkdir -p docs && cp index.html docs",
     "lint": "standard src/**/**.js --verbose | snazzy",
     "test": "ava",
     "cov": "nyc report --reporter=html",
-    "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o docs/app.js -t sheetify/transform -t envify -g unassertify -g es2040 -g uglifyify "
+    "build": "npm run copy && NODE_ENV=production browserify -e src/app.js -o docs/app.js -t sheetify/transform -t envify -g unassertify -g es2040 -g uglifyify ",
+    "postpublish": "greenkeeper-postpublish"
   },
   "keywords": [],
-  "author": "",
+  "author": "tgfjt",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tgfjt/you-have-a-pen"
+  },
+  "bugs": {
+    "url": "https://github.com/tgfjt/you-have-a-pen/issues"
+  },
   "dependencies": {
     "choo": "^3.3.0",
     "keymaster": "^1.6.2",
@@ -30,6 +36,7 @@
     "choo-log": "^2.0.0",
     "envify": "^3.4.1",
     "es2040": "^1.2.4",
+    "greenkeeper-postpublish": "^1.0.1",
     "nyc": "^8.3.2",
     "sheetify": "^5.1.1",
     "snazzy": "^5.0.0",
