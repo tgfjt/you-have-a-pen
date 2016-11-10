@@ -35,7 +35,7 @@ module.exports = {
     waitingSkill: false
   },
   reducers: {
-    newGame: (data, state) => ({
+    newGame: (state, data) => ({
       timer: null,
       started: true,
       ended: false,
@@ -43,26 +43,26 @@ module.exports = {
       currentBlock: newBlock({ current: true }),
       orderedBlocks: data
     }),
-    setLooptime: (data, state) => ({ looptime: data }),
+    setLooptime: (state, data) => ({ looptime: data }),
     makeCurrentEmpty: () => ({
       currentBlock: { charactor: null, color: null }
     }),
-    updateNext: (data, state) => ({
+    updateNext: (state, data) => ({
       nextBlock: data,
       currentBlock: xtend(state.nextBlock, { current: true })
     }),
-    updateCurrent: (data, state) => ({ currentBlock: data }),
-    setPause: (data, state) => ({ pause: data }),
-    updateBlocks: (data, state) => ({ orderedBlocks: data }),
-    selectBlock: (data, state) => ({ selectedBlock: data }),
-    stopTimer: (data, state) => ({ timer: null }),
-    updateSkillCount: (data, state) => ({ skill: data }),
-    setWaitingSkill: (data, state) => ({ waitingSkill: data }),
-    setVolumeState: (data, state) => ({ volume: data }),
-    end: (data, state) => ({ started: false, ended: true })
+    updateCurrent: (state, data) => ({ currentBlock: data }),
+    setPause: (state, data) => ({ pause: data }),
+    updateBlocks: (state, data) => ({ orderedBlocks: data }),
+    selectBlock: (state, data) => ({ selectedBlock: data }),
+    stopTimer: (state, data) => ({ timer: null }),
+    updateSkillCount: (state, data) => ({ skill: data }),
+    setWaitingSkill: (state, data) => ({ waitingSkill: data }),
+    setVolumeState: (state, data) => ({ volume: data }),
+    end: (state, data) => ({ started: false, ended: true })
   },
   effects: {
-    start: (data, state, send, done) => {
+    start: (state, data, send, done) => {
       const firstBlocks = Object.assign(orderedMatrix(boardSize), startedRandBlocks())
 
       send('game:stopTimer', null, done)
@@ -84,11 +84,11 @@ module.exports = {
       state.bgm.loop = true
       if (state.volume) state.bgm.play()
     },
-    stop: (data, state, send, done) => {
+    stop: (state, data, send, done) => {
       clearTimeout(state.timer)
       send('game:stopTimer', done)
     },
-    pause: (data, state, send, done) => {
+    pause: (state, data, send, done) => {
       if (!state.pause) {
         send('game:stop', null, done)
         send('game:setPause', true, done)
@@ -97,11 +97,11 @@ module.exports = {
         send('game:mainLoop', done)
       }
     },
-    setVolume: (data, state, send, done) => {
+    setVolume: (state, data, send, done) => {
       state.bgm.volume = state.volume ? 0.5 : 0
       state.selectSound.volume = state.volume ? 0.2 : 0
     },
-    toggleVolume: (data, state, send, done) => {
+    toggleVolume: (state, data, send, done) => {
       send('game:setVolumeState', !state.volume, done)
       if (!state.volume) {
         state.bgm.play()
@@ -109,7 +109,7 @@ module.exports = {
         state.bgm.pause()
       }
     },
-    speedup: (score, state, send, done) => {
+    speedup: (state, score, send, done) => {
       if (score > 10000) {
         send('game:setLooptime', 200, done)
       } else if (score > 7000) {
@@ -126,7 +126,7 @@ module.exports = {
         send('game:setLooptime', 1200, done)
       }
     },
-    removeBlocks: (indexOfLines, state, send, done) => {
+    removeBlocks: (state, indexOfLines, send, done) => {
       const newData = cloneDeep(state.orderedBlocks)
 
       let rows = []
@@ -189,7 +189,7 @@ module.exports = {
       send('result:remove', gotWord, done)
       send('game:updateBlocks', newData, done)
     },
-    replaceThis: (data, state, send, done) => {
+    replaceThis: (state, data, send, done) => {
       state.selectSound.currentTime = 0
 
       if (state.waitingSkill) {
@@ -236,12 +236,12 @@ module.exports = {
         send('game:selectBlock', null, done)
       }
     },
-    mainLoop: (data, state, send, done) => {
+    mainLoop: (state, data, send, done) => {
       state.timer = setTimeout(() => {
         send('game:loop', done)
       }, state.looptime)
     },
-    loop: (data, state, send, done) => {
+    loop: (state, data, send, done) => {
       if (state.currentBlock.y > 0) {
         if (!flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
           return !(state.currentBlock.x === b.x && state.currentBlock.y - 1 === b.y)
@@ -255,7 +255,7 @@ module.exports = {
         send('game:next', done)
       }
     },
-    next: (data, state, send, done) => {
+    next: (state, data, send, done) => {
       send('game:stopTimer', null, done)
 
       const newBlocks = cloneDeep(state.orderedBlocks)
@@ -284,11 +284,11 @@ module.exports = {
         send('game:mainLoop', done)
       }
     },
-    over: (data, state, send, done) => {
+    over: (state, data, send, done) => {
       send('game:stopTimer', null, done)
       send('game:end', null, done)
     },
-    handleDown: (data, state, send, done) => {
+    handleDown: (state, data, send, done) => {
       if (!state.pause && state.currentBlock.y > 0) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
           return !(state.currentBlock.x === b.x && state.currentBlock.y - 1 === b.y)
@@ -297,7 +297,7 @@ module.exports = {
         }
       }
     },
-    handleLeft: (data, state, send, done) => {
+    handleLeft: (state, data, send, done) => {
       if (!state.pause && state.currentBlock.x > 0) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
           return !(state.currentBlock.y === b.y && state.currentBlock.x - 1 === b.x)
@@ -306,7 +306,7 @@ module.exports = {
         }
       }
     },
-    handleRight: (data, state, send, done) => {
+    handleRight: (state, data, send, done) => {
       if (!state.pause && state.currentBlock.x < (state.board.rows - 1)) {
         if (flatten(state.orderedBlocks).filter(item => !!item).every((b) => {
           return !(state.currentBlock.y === b.y && state.currentBlock.x + 1 === b.x)
@@ -315,7 +315,7 @@ module.exports = {
         }
       }
     },
-    useSkill: (data, state, send, done) => {
+    useSkill: (state, data, send, done) => {
       if (!state.ended && state.started && state.skill > 0) {
         send('game:pause', null, done)
         send('game:setWaitingSkill', true, done)

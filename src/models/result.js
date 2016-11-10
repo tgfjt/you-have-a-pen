@@ -9,18 +9,18 @@ module.exports = {
     details: { PINEAPPLE: 0, APPLE: 0, PEN: 0 }
   },
   reducers: {
-    addScore: (data, state) => ({
+    addScore: (state, data) => ({
       totalscore: data.total,
       details: xtend(state.details, data.details)
     }),
-    reset: (data, state) => ({
+    reset: (state, data) => ({
       totalscore: 0,
       details: { PINEAPPLE: 0, APPLE: 0, PEN: 0 }
     })
   },
   effects: {
     // TODO: to be double score with chain removing
-    remove: (targetWord, state, send, done) => {
+    remove: (state, targetWord, send, done) => {
       console.assert(typeof targetWord === 'string', 'targetWord is not string')
       console.assert(typeof (state.details[targetWord] + scores[targetWord]) === 'number', 'score is not number')
 
