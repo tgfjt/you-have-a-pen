@@ -15,7 +15,11 @@ if (process.env.NODE_ENV !== 'production') {
 app.model(require('./models/game'))
 app.model(require('./models/result'))
 
-app.router(['/', gameView])
+app.router({ default: '/' }, [
+  ['/', gameView],
+  ['/you-have-a-pen', gameView]
+])
+
 
 const tree = app.start()
 document.body.appendChild(tree)
