@@ -2,6 +2,7 @@ const key = require('keymaster')
 const xtend = require('xtend')
 const flatten = require('lodash.flatten')
 const cloneDeep = require('lodash.cloneDeep')
+const assign = require('lodash.assign')
 
 const config = require('../lib/config')
 const getIndexOfLines = require('../lib/indexOfLines')
@@ -63,7 +64,7 @@ module.exports = {
   },
   effects: {
     start: (state, data, send, done) => {
-      const firstBlocks = Object.assign(orderedMatrix(boardSize), startedRandBlocks())
+      const firstBlocks = assign(orderedMatrix(boardSize), startedRandBlocks())
 
       send('game:stopTimer', null, done)
       send('result:reset', null, done)
