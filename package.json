@@ -43,7 +43,7 @@
     "snazzy": "^5.0.0",
     "standard": "^8.4.0",
     "uglifyify": "^3.0.3",
-    "unassertify": "^2.0.3"
+    "unassertify": "^2.0.4"
   },
   "ava": {
     "files": [
