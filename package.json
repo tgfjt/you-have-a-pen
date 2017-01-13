@@ -33,7 +33,7 @@
   "devDependencies": {
     "ava": "^0.16.0",
     "browserify": "^13.1.0",
-    "budo": "^9.2.1",
+    "budo": "^9.4.5",
     "choo-log": "^3.0.0",
     "envify": "^3.4.1",
     "es2040": "^1.2.4",
