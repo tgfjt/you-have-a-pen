@@ -36,7 +36,7 @@
     "budo": "^9.2.1",
     "choo-log": "^3.0.0",
     "envify": "^3.4.1",
-    "es2040": "^1.2.4",
+    "es2040": "^1.2.5",
     "greenkeeper-postpublish": "^1.0.1",
     "nyc": "^8.3.2",
     "sheetify": "^5.1.1",
