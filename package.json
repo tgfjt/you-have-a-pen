@@ -41,7 +41,7 @@
     "nyc": "^8.3.2",
     "sheetify": "^5.1.1",
     "snazzy": "^5.0.0",
-    "standard": "^8.4.0",
+    "standard": "^9.0.2",
     "uglifyify": "^3.0.3",
     "unassertify": "^2.0.3"
   },
