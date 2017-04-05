@@ -35,7 +35,7 @@
     "browserify": "^13.1.0",
     "budo": "^9.2.1",
     "choo-log": "^3.0.0",
-    "envify": "^3.4.1",
+    "envify": "^4.0.0",
     "es2040": "^1.2.4",
     "greenkeeper-postpublish": "^1.0.1",
     "nyc": "^8.3.2",
